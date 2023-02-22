@@ -1,0 +1,71 @@
+{
+  "name": "core-dsl",
+  "scopeName": "source.core-dsl",
+  "fileTypes": [
+    ".core_desc"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "name": "keyword.control.core-dsl",
+      "match": "\\b(Core|InstructionSet|alignof|architectural_state|assembly|behavior|bitsizeof|bool|break|case|char|const|continue|default|do|double|else|encoding|enum|extends|extern|float|for|functions|if|import|instructions|int|long|offsetof|provides|register|return|short|signed|sizeof|spawn|static|struct|switch|union|unsigned|void|volatile|while)\\b"
+    },
+    {
+      "name": "string.quoted.double.core-dsl",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "include": "#string-character-escape"
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.single.core-dsl",
+      "begin": "'",
+      "end": "'",
+      "patterns": [
+        {
+          "include": "#string-character-escape"
+        }
+      ]
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.core-dsl",
+          "begin": "/\\*",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.core-dsl"
+            }
+          },
+          "end": "\\*/",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.core-dsl"
+            }
+          }
+        },
+        {
+          "begin": "//",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.whitespace.comment.leading.core-dsl"
+            }
+          },
+          "end": "(?=$)",
+          "name": "comment.line.core-dsl"
+        }
+      ]
+    },
+    "string-character-escape": {
+      "name": "constant.character.escape.core-dsl",
+      "match": "\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|u\\{[0-9A-Fa-f]+\\}|[0-2][0-7]{0,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.|$)"
+    }
+  }
+}

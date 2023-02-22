@@ -1,0 +1,12 @@
+{
+    "projectName": "CoreDsl",
+    "languages": [{
+        "id": "core-dsl",
+        "grammar": "src/language-server/core-dsl.langium",
+        "fileExtensions": [".core_desc"],
+        "textMate": {
+            "out": "syntaxes/core-dsl.tmLanguage.json"
+        }
+    }],
+    "out": "src/language-server/generated"
+}
