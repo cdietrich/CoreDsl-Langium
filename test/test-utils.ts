@@ -51,9 +51,9 @@ export function expectNoErrors(
     const lexer = list.includes("lexer");
     const parser = list.includes("parser");
     const validator = list.includes("validator");
-    expect(result.parseResult.lexerErrors.length > 0).toBe(lexer);
-    expect(result.parseResult.parserErrors.length > 0).toBe(parser);
-    expect((result.diagnostics?.length ?? 0) > 0).toBe(validator);
+    expect(result.parseResult.lexerErrors.length > 0, result.parseResult.lexerErrors.toString()).toBe(lexer);
+    expect(result.parseResult.parserErrors.length > 0, result.parseResult.parserErrors.toString()).toBe(parser);
+    expect((result.diagnostics?.length ?? 0) > 0, result.diagnostics?.toString()).toBe(validator);
 }
 
 
