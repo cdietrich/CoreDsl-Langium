@@ -6,9 +6,16 @@ import { createCoreDslServices } from '../language-server/core-dsl-module';
 import { extractAstNode } from './cli-util';
 import { generateJavaScript } from './generator';
 import { NodeFileSystem } from 'langium/node';
-
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createCoreDslServices(NodeFileSystem).CoreDsl;
+    const lexer = services.parser.Lexer
+    const m = `7'b1111`
+    //const m = "4"
+    const res = lexer.tokenize(m)
+      console.log(res)
+      for (var val of res.tokens) {
+        console.log(val.tokenType.name)
+      }
     const model = await extractAstNode<DescriptionContent>(fileName, services);
     const generatedFilePath = generateJavaScript(model, fileName, opts.destination);
     console.log(chalk.green(`JavaScript code generated successfully: ${generatedFilePath}`));

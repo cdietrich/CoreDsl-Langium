@@ -264,31 +264,34 @@ terminal BOOLEAN returns boolean: 'true' | 'false' ;
 
 terminal FLOAT returns number:  (('0'..'9')+ '.' ('0'..'9')*) (('e' | 'E') ('+' | '-')? ('0'..'9')+)? ('f'|'F'|'l'|'L')?;
 
-terminal INTEGER returns bigint:  (BINARYINT | HEXADECIMALINT | OCTALINT | DECIMALINT | VLOGINT) ('u'|'U')? (('l'|'L') ('l'|'L')?)?;
+terminal INTEGER returns bigint:  (VLOGINT | BINARYINT | HEXADECIMALINT | OCTALINT | DECIMALINT) ('u'|'U')? (('l'|'L') ('l'|'L')?)?;
+
+terminal fragment VLOGINT: ('0'..'9')+ "'" ('b' ('0'..'1')+ | 'o' ('0'..'7')+ | 'd' ('0'..'9')+ | 'h' ('0'..'9'|'a'..'f'|'A'..'F')+); 
+
 
 terminal fragment BINARYINT:	('0b' | '0B') '0'..'1' (('_')? '0'..'1')*;
 
 terminal fragment OCTALINT:   '0' ('_')? '0'..'7' (('_')? '0'..'7')*;
 
-terminal fragment DECIMALINT:   '0' | '1'..'9' (('_')? '0'..'9')*;
-
 terminal fragment HEXADECIMALINT:   ('0x'|'0X') ('0'..'9'|'a'..'f'|'A'..'F')  (('_')? ('0'..'9'|'a'..'f'|'A'..'F'))*;
 
-terminal fragment VLOGINT: ('0'..'9')+ "'" ('b' ('0'..'1')+ | 'o' ('0'..'7')+ | 'd' ('0'..'9')+ | 'h' ('0'..'9'|'a'..'f'|'A'..'F')+); 
+terminal fragment DECIMALINT:   '0' | '1'..'9' (('_')? '0'..'9')*;
 
-terminal CHARCONST:	('u'|'U'|'L')? "'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|"'") )* "'";
+
+
+
+terminal CHARCONST:	('u'|'U'|'L')? "'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | /[^\\']/ )* "'";
+terminal ENCSTRINGCONST	:	('u8'|'u'|'U'|'L') '"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | /[^\\"]/ )* '"';
 
  
 terminal ID : '^'?('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
 
 // do we need to override the built-in STRING rule?
 
-terminal ENCSTRINGCONST	:	('u8'|'u'|'U'|'L') '"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"';
-
 hidden terminal WS: /\s+/;
 //terminal ID: /[_a-zA-Z][\w_]*/;
 terminal INT returns number: /[0-9]+/;
-terminal STRING: /"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/;
+terminal STRING: /"(\\.|[^"\\])*"/;
 
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;

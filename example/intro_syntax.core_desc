@@ -1,6 +1,6 @@
 // https://github.com/Minres/CoreDSL/wiki/Introduction:-Syntax
 
-xCore My32bitRISCVCore {
+Core My32bitRISCVCore {
   architectural_state {
              unsigned int    REG_LEN = 32;  // implementation parameter
              unsigned int    XLEN = 32;     // implementation parameter
