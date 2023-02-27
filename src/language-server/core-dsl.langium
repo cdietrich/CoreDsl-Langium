@@ -280,8 +280,8 @@ terminal fragment DECIMALINT:   '0' | '1'..'9' (('_')? '0'..'9')*;
 
 
 
-terminal CHARCONST:	('u'|'U'|'L')? "'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | /[^\\']/ )* "'";
-terminal ENCSTRINGCONST	:	('u8'|'u'|'U'|'L') '"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | /[^\\"]/ )* '"';
+terminal CHARCONST:	('u'|'U'|'L')? "'" ( '\\' .  | /[^\\']/ ) "'";
+terminal ENCSTRINGCONST	:	('u8'|'u'|'U'|'L') '"' ( '\\' . | /[^\\"]/ )* '"';
 
  
 terminal ID : '^'?('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
@@ -291,7 +291,7 @@ terminal ID : '^'?('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
 hidden terminal WS: /\s+/;
 //terminal ID: /[_a-zA-Z][\w_]*/;
 terminal INT returns number: /[0-9]+/;
-terminal STRING: /"(\\.|[^"\\])*"/;
+terminal STRING: /"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/;
 
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;

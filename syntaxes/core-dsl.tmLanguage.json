@@ -21,6 +21,16 @@
           "include": "#string-character-escape"
         }
       ]
+    },
+    {
+      "name": "string.quoted.single.core-dsl",
+      "begin": "'",
+      "end": "'",
+      "patterns": [
+        {
+          "include": "#string-character-escape"
+        }
+      ]
     }
   ],
   "repository": {
