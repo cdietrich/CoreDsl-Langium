@@ -5,6 +5,7 @@
     "lib": ["ESNext"],
     "sourceMap": true,
     "outDir": "out",
+    "composite": true,
     "strict": true,
     "noUnusedLocals": true,
     "noImplicitReturns": true,

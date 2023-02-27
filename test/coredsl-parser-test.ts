@@ -1,4 +1,4 @@
-import { describe, expect, test, it } from 'vitest';
+import { describe, it } from 'vitest';
 import { /*AstNode, LangiumDocument, ReferenceDescription,*/ EmptyFileSystem, LangiumDocument } from 'langium';
 import { parseDocument } from 'langium/test';
 import { createCoreDslServices } from '../src/language-server/core-dsl-module';
