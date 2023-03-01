@@ -4,6 +4,7 @@ import {
 } from 'langium';
 import { CoreDslGeneratedModule, CoreDslGeneratedSharedModule } from './generated/module';
 import { CoreDslValidator, registerValidationChecks } from './core-dsl-validator';
+import { CoreDslScopeComputation, CoreDslScopeProvider } from './core-dsl-scope-computation';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -28,6 +29,10 @@ export type CoreDslServices = LangiumServices & CoreDslAddedServices
 export const CoreDslModule: Module<CoreDslServices, PartialLangiumServices & CoreDslAddedServices> = {
     validation: {
         CoreDslValidator: () => new CoreDslValidator()
+    },
+    references: {
+        ScopeComputation: (services) => new CoreDslScopeComputation(services),
+        ScopeProvider: (services) => new CoreDslScopeProvider(services)
     }
 };
 

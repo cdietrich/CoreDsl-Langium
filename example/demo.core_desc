@@ -1,2 +1,14 @@
 Core My32bitRISCVCore {
 }
+
+InstructionSet RISCVBase2 {
+    architectural_state {
+        unsigned int XLEN;
+
+        // register aliases
+        unsigned<XLEN>& ZERO = X[0];
+    }
+}
+
+InstructionSet Demo extends RISCVBase {
+}
