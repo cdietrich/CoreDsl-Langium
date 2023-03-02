@@ -1,4 +1,4 @@
-import "RISCVBase.core_desc"
+//import "RISCVBase.core_desc"
 
 Core My32bitRISCVCore {
 }
@@ -7,7 +7,7 @@ InstructionSet RISCVBase2 {
     architectural_state {
        unsigned int XLEN;
         // unsigned int INSTR_ALIGNMENT = 4;
-        unsigned int RFS = 32;
+        //unsigned int RFS = 32;
 
         // unsigned int fence = 0;
         // unsigned int fencei = 1;
@@ -16,6 +16,7 @@ InstructionSet RISCVBase2 {
 
         // core registers
         register unsigned<XLEN> X[RFS] [[is_main_reg]];
+        unsigned int RFS = 32;
         // register unsigned<XLEN> PC [[is_pc]];
     }
 }
