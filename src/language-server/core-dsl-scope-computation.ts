@@ -1,6 +1,6 @@
 import { equalURI, stream, getDocument, EMPTY_SCOPE, getContainerOfType, AstNodeDescription, DefaultScopeComputation, DefaultScopeProvider, LangiumDocument, LangiumServices, ReferenceInfo, Scope, streamAllContents, StreamScope, AstNode } from "langium";
 import { URI, Utils } from "vscode-uri";
-import {isDeclarator, isBitField, isDescriptionContent, isInstructionSet, Import, InstructionSet, isStatement, Statement, isCompoundStatement, Declaration, isPrimaryExpression, isCoreDef, CoreDef, isDeclarationStatement, NamedEntity, Declarator, isEntityReference, isFunctionDefinition, isInstruction} from './generated/ast'
+import {isDeclarator, isBitField, isDescriptionContent, isInstructionSet, Import, InstructionSet, isStatement, Statement, isCompoundStatement, Declaration, isPrimaryExpression, isCoreDef, CoreDef, isDeclarationStatement, NamedEntity, Declarator, isEntityReference, isFunctionDefinition, isInstruction, isForLoop} from './generated/ast'
 
 export class CoreDslScopeComputation extends DefaultScopeComputation {
     constructor(services: LangiumServices) {
@@ -173,14 +173,15 @@ export class CoreDslScopeProvider extends DefaultScopeProvider {
             return this.createScopeForNodes(this.variables(isa), outer)
         } else if (isStatement(isa)) {
             const parent = isa.$container
+            var parentScope : Scope 
             if (isCompoundStatement(parent)) {
                 //  Scopes.scopeFor(variablesDeclaredBefore(parent,context), scopeForVariable(parent,reference))
-                return this.createScopeForNodes(this.variablesDeclaredBefore(parent, isa), this.scopeForVariable(refInfo, parent))
+                parentScope = this.createScopeForNodes(this.variablesDeclaredBefore(parent, isa), this.scopeForVariable(refInfo, parent))
             } else if (isInstruction(parent)) {
                 var instructionSet= getContainerOfType(parent, isInstructionSet);
                 var  coreDef = getContainerOfType(parent, isCoreDef);
                 var  n = instructionSet !== undefined ? instructionSet : coreDef;
-                return this.createScopeForNodes(streamAllContents(parent).filter((e) => isBitField(e)), this.getScopeInternal(refInfo, n))
+                parentScope = this.createScopeForNodes(streamAllContents(parent).filter((e) => isBitField(e)), this.getScopeInternal(refInfo, n))
                 
                 // Scopes.scopeFor(EcoreUtil2.getAllContentsOfType(parent, BitField),
                 //     getScope(parentOfType(parent,ISA),reference))
@@ -188,14 +189,19 @@ export class CoreDslScopeProvider extends DefaultScopeProvider {
                 var instructionSet= getContainerOfType(parent, isInstructionSet);
                 var  coreDef = getContainerOfType(parent, isCoreDef);
                 var  n = instructionSet !== undefined ? instructionSet : coreDef;
-                return this.createScopeForNodes(streamAllContents(parent).filter((e) => isDeclarator(e)), this.getScopeInternal(refInfo, n))
+                parentScope = this.createScopeForNodes(streamAllContents(parent).filter((e) => isDeclarator(e)), this.getScopeInternal(refInfo, n))
                 // Scopes.scopeFor(EcoreUtil2.getAllContentsOfType(parent, Declarator),
                 // getScope(parentOfType(parent,ISA),reference))
             } else {
-                return this.getScopeInternal(refInfo, isa.$container)
+                parentScope = this.getScopeInternal(refInfo, isa.$container)
+            }
+            if (isForLoop(isa)) {
+                if (isa.startDeclaration !== undefined) {
+                    return this.createScopeForNodes(isa.startDeclaration.declarators, parent)
+                }
             }
             //
-            return EMPTY_SCOPE
+            return parentScope
         }
         return EMPTY_SCOPE
 
