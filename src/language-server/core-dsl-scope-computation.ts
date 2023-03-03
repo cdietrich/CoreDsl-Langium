@@ -1,6 +1,6 @@
 import { equalURI, stream, getDocument, EMPTY_SCOPE, getContainerOfType, AstNodeDescription, DefaultScopeComputation, DefaultScopeProvider, LangiumDocument, LangiumServices, ReferenceInfo, Scope, streamAllContents, StreamScope, AstNode } from "langium";
 import { URI, Utils } from "vscode-uri";
-import {isDeclarator, isBitField, isDescriptionContent, isInstructionSet, Import, InstructionSet, isStatement, Statement, isCompoundStatement, Declaration, isPrimaryExpression, isCoreDef, CoreDef, isDeclarationStatement, NamedEntity, Declarator, isEntityReference, isFunctionDefinition, isInstruction, isForLoop} from './generated/ast'
+import { isDeclarator, isBitField, isDescriptionContent, isInstructionSet, Import, InstructionSet, isStatement, Statement, isCompoundStatement, Declaration, isPrimaryExpression, isCoreDef, CoreDef, isDeclarationStatement, NamedEntity, Declarator, isEntityReference, isFunctionDefinition, isInstruction, isForLoop} from './generated/ast'
 
 export class CoreDslScopeComputation extends DefaultScopeComputation {
     constructor(services: LangiumServices) {

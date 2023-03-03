@@ -11,7 +11,6 @@ const services = createCoreDslServices(EmptyFileSystem).CoreDsl;
 export function assertNoErrors(doc: LangiumDocument<AstNode>) {
     assertNoLexerAndParseErrors(doc)
     let diagnostics = doc.diagnostics ?? []
-    console.log(diagnostics.map((d)=>d.message).toString());
     expect(diagnostics).toHaveLength(0);
 }
 
