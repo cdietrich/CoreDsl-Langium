@@ -131,7 +131,19 @@ export class CoreDslScopeProvider extends DefaultScopeProvider {
 
     protected declarationsBefore(object: AstNode, decl:Statement): Declaration[] {
         if (isCompoundStatement(object)) {
-            return this.takeWhile(object.statements, (s) => s != decl).filter(isDeclarationStatement).map((e=>e.declaration))
+
+            /**
+             * val result = object.statements.takeWhile [
+                    it !== decl
+                ].filter[it instanceof DeclarationStatement].map[(it as DeclarationStatement).declaration]
+                
+             */
+
+            let smts = this.takeWhile(object.statements, (s) => {
+                return s != decl;
+            });
+            let result = smts.filter(isDeclarationStatement).map((e=>e.declaration))
+            return result
         } else if (isInstructionSet(object)) {
             return this.takeWhile(this.allDeclarations(object), (e:Declaration) =>{
                 if (isDeclarationStatement(e.$container)) {
@@ -215,7 +227,9 @@ export class CoreDslScopeProvider extends DefaultScopeProvider {
 
     private variablesDeclaredBefore(stmt:AstNode, o: AstNode) : Declarator[] {
         if (isStatement(o)) {
-            return this.declarationsBefore(stmt, o).flatMap((it) => it.declarators)
+            const ds = this.declarationsBefore(stmt, o)
+            const before = ds.flatMap((it) => it.declarators)
+            return before
         } else {
             return []
         }
@@ -245,8 +259,8 @@ export class CoreDslScopeProvider extends DefaultScopeProvider {
     protected takeWhile<T extends AstNode>(arr: T[], func: (e:T)=>Boolean) : T[] {
         var result:T[] = [];
         for (var e of arr) {
-            if (func(e)) {
-                result
+            if (!func(e)) {
+                return result
             }
             result.push(e)
         }
