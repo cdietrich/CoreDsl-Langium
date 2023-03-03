@@ -197,7 +197,7 @@ export class CoreDslScopeProvider extends DefaultScopeProvider {
             }
             if (isForLoop(isa)) {
                 if (isa.startDeclaration !== undefined) {
-                    return this.createScopeForNodes(isa.startDeclaration.declarators, parent)
+                    return this.createScopeForNodes(isa.startDeclaration.declarators, parentScope)
                 }
             }
             //
