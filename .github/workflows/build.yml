@@ -1,0 +1,22 @@
+name: Build
+
+on: 
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - run: npm install
+      - run: npm run langium:generate
+      - run: npm run build
+      - run: npm run test run
+      - run: npm install -g vsce
+      - run: vsce package
