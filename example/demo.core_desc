@@ -7,7 +7,7 @@ InstructionSet RISCVBase2 {
     architectural_state {
        unsigned int XLEN;
         // unsigned int INSTR_ALIGNMENT = 4;
-        unsigned int RFS = 32;
+        unsigned int RFS2 = 32;
 
         // unsigned int fence = 0;
         // unsigned int fencei = 1;
@@ -15,11 +15,26 @@ InstructionSet RISCVBase2 {
         // unsigned int fencevmau = 3;
 
         // core registers
-        register unsigned<XLEN> X[RFS] [[is_main_reg]];
+        register unsigned<XLEN> X[RFS2] [[is_main_reg]];
         // register unsigned<XLEN> PC [[is_pc]];
     }
 }
 
 InstructionSet Demo extends RISCVBase {
-    
+     architectural_state {
+        unsigned<XLEN>& ZERO = X[0];
+     }
 }
+
+InstructionSet TestISA {
+            instructions {
+                Inst1 {
+                    encoding: 0b0000000 :: rs2[4:0] :: rs1[4:0] :: 0b000 :: rd[4:0] :: 0b0000000;  
+                    assembly: "{name(rd)}, {name(rs1)}, {name(rs2)}";
+                    behavior: {
+                        x2 = 0;
+                        int x;
+                    }
+                }
+            }
+        }
