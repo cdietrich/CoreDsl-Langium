@@ -262,9 +262,11 @@ terminal RIGHT_BR: ']';
 
 terminal BOOLEAN returns boolean: 'true' | 'false' ;
 
-terminal FLOAT returns number:  (('0'..'9')+ '.' ('0'..'9')*) (('e' | 'E') ('+' | '-')? ('0'..'9')+)? ('f'|'F'|'l'|'L')?;
+// TODO
+terminal FLOAT returns string:  (('0'..'9')+ '.' ('0'..'9')*) (('e' | 'E') ('+' | '-')? ('0'..'9')+)? ('f'|'F'|'l'|'L')?;
 
-terminal INTEGER returns bigint:  (VLOGINT | BINARYINT | HEXADECIMALINT | OCTALINT | DECIMALINT) ('u'|'U')? (('l'|'L') ('l'|'L')?)?;
+// TODO
+terminal INTEGER returns string:  (VLOGINT | BINARYINT | HEXADECIMALINT | OCTALINT | DECIMALINT) ('u'|'U')? (('l'|'L') ('l'|'L')?)?;
 
 terminal fragment VLOGINT: ('0'..'9')+ "'" ('b' ('0'..'1')+ | 'o' ('0'..'7')+ | 'd' ('0'..'9')+ | 'h' ('0'..'9'|'a'..'f'|'A'..'F')+); 
 
