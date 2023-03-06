@@ -1,11 +1,9 @@
-import { describe, expect, test, afterEach } from 'vitest';
-import { AstNode, EmptyFileSystem, LangiumDocument } from 'langium';
-import { clearDocuments, parseDocument } from 'langium/test';
-import { createCoreDslServices } from '../src/language-server/core-dsl-module';
-import { DescriptionContent } from '../src/language-server/generated/ast';
-import { assertNoErrors, assertNoLexerAndParseErrors, parse, assertErrors } from './test-utils';
-import { Diagnostic } from 'vscode-languageserver';
+import { EmptyFileSystem } from 'langium';
+import { clearDocuments } from 'langium/test';
+import { afterEach, describe, expect, test } from 'vitest';
 import { URI } from 'vscode-uri';
+import { createCoreDslServices } from '../src/language-server/core-dsl-module';
+import { assertErrors, assertNoErrors, parse } from './test-utils';
 
 const services = createCoreDslServices(EmptyFileSystem).CoreDsl;
 
@@ -308,7 +306,6 @@ describe('Test Scoping', () => {
         }`);
         assertNoErrors(doc);
     });
-
 
 });
 

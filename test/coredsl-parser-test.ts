@@ -1,9 +1,7 @@
-import { describe, it, test } from 'vitest';
-import { EmptyFileSystem, LangiumDocument } from 'langium';
-import { parseDocument } from 'langium/test';
+import { EmptyFileSystem } from 'langium';
+import { describe, test } from 'vitest';
 import { createCoreDslServices } from '../src/language-server/core-dsl-module';
 import { assertNoLexerAndParseErrors, parse } from './test-utils';
-import { DescriptionContent } from '../src/language-server/generated/ast';
 
 const services = createCoreDslServices(EmptyFileSystem).CoreDsl;
 

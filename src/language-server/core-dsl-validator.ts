@@ -1,8 +1,8 @@
-import { AstNode, DiagnosticInfo, ValidationAcceptor, ValidationChecks } from 'langium';
-import { Attribute, FunctionDefinition, Instruction ,Declaration, Declarator, CoreDef, CoreDslAstType, DescriptionContent, Expression, InfixExpression, InstructionSet, isCastExpression, isInfixExpression, isPostfixExpression, isPrefixExpression, isPrimaryExpression } from './generated/ast';
+import { ValidationAcceptor, ValidationChecks } from 'langium';
+import { integer } from 'vscode-languageclient';
 import type { CoreDslServices } from './core-dsl-module';
 import { TypeProvider } from './core-dsl-typesystem';
-import { integer } from 'vscode-languageclient';
+import { Attribute, CoreDef, CoreDslAstType, Declaration, Declarator, DescriptionContent, Expression, FunctionDefinition, InfixExpression, Instruction, InstructionSet, isCastExpression, isInfixExpression, isPostfixExpression, isPrefixExpression, isPrimaryExpression } from './generated/ast';
 
 /**
  * Register custom validation checks.
@@ -27,9 +27,9 @@ export function registerValidationChecks(services: CoreDslServices) {
  * Implementation of custom validations.
  */
 
-type AttributeUsage = 'instruction' | 'function' | 'declaration'
+export type AttributeUsage = 'instruction' | 'function' | 'declaration'
 
-const KnownAttributes = new Map<string, [integer, AttributeUsage]>([
+export const KnownAttributes = new Map<string, [integer, AttributeUsage]>([
     ["enable", [1, "instruction"]],
     ["hls", [0, "instruction"]],
     ["no_cont", [0, "instruction"]],
@@ -47,37 +47,38 @@ const KnownAttributes = new Map<string, [integer, AttributeUsage]>([
 export class CoreDslValidator {
 
     checkAttributeNamesISA(isa: CoreDef|InstructionSet, accept: ValidationAcceptor) : void {
-		this.checkAttributes(isa.commonInstructionAttributes, 'instruction', accept, {node: isa, property: 'commonInstructionAttributes'});
+		this.checkAttributes(isa.commonInstructionAttributes, 'instruction', accept);
 	}
 
 	checkAttributeNamesInstruction(instr: Instruction, accept: ValidationAcceptor) : void {
-		this.checkAttributes(instr.attributes, 'instruction', accept, {node: instr, property: 'attributes'});
+		this.checkAttributes(instr.attributes, 'instruction', accept);
 	}
 
 	checkAttributeNamesDeclaration(decl: Declaration, accept: ValidationAcceptor) : void {
-		this.checkAttributes(decl.attributes, 'declaration', accept, {node: decl, property: 'attributes'});
+		this.checkAttributes(decl.attributes, 'declaration', accept);
 	}
 
 	checkAttributeNamesDeclarator(decl: Declarator, accept: ValidationAcceptor) : void {
-		this.checkAttributes(decl.attributes, 'declaration', accept, {node: decl, property: 'attributes'});
+		this.checkAttributes(decl.attributes, 'declaration', accept);
 	}
 
 	checkAttributeNamesFunctionDefinition(decl: FunctionDefinition, accept: ValidationAcceptor) : void {
-		this.checkAttributes(decl.attributes, 'function', accept, {node: decl, property: 'attributes'});
+		this.checkAttributes(decl.attributes, 'function', accept);
 	}
 
     
 
-    checkAttributes<N extends AstNode>(attributes: Attribute[], expectedUsage: AttributeUsage, accept: ValidationAcceptor, feature: DiagnosticInfo<N>): void {
-		for(var attribute of attributes) {
+    checkAttributes(attributes: Attribute[], expectedUsage: AttributeUsage, accept: ValidationAcceptor): void {
+		console.log(expectedUsage)
+        for(var attribute of attributes) {
 			let info = KnownAttributes.get(attribute.type);
 			
 			if(info === undefined || info[1] != expectedUsage) {
-                accept('error', "unexpected attribute '" + attribute.type + "'", feature);
-                return;
+                accept('error', "unexpected attribute '" + attribute.type + "'", {node: attribute, property: 'type'});
+                continue;
             }
 			if(attribute.parameters.length != info[0])
-                accept('error', "attribute '" + attribute.type + "' requires exactly " + info[0] + " parameter(s)", feature);
+                accept('error', "attribute '" + attribute.type + "' requires exactly " + info[0] + " parameter(s)", {node: attribute, property: 'type'});
 		}
 	}
 
