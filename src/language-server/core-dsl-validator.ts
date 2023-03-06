@@ -11,7 +11,7 @@ export function registerValidationChecks(services: CoreDslServices) {
     const validator = services.validation.CoreDslValidator;
     const checks: ValidationChecks<CoreDslAstType> = {
         DescriptionContent: validator.checkPersonStartsWithCapital,
-        Expression: validator.checkType
+        // TODO is currently also disabled in Xtext variant Expression: validator.checkType
     };
     registry.register(checks, validator);
 }
@@ -22,11 +22,31 @@ export function registerValidationChecks(services: CoreDslServices) {
 export class CoreDslValidator {
 
     checkType(e: Expression, accept: ValidationAcceptor): void {
-        if (isPrimaryExpression(e) || isPostfixExpression(e) || isPrefixExpression(e)) {
+        try {
+            this.checkType2(e,accept)
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
+    checkType2(e: Expression, accept: ValidationAcceptor): void {
+        if (isPrimaryExpression(e)) {
             let type = TypeProvider.typeForExpression(e)
             if (type === undefined) {
                 // TODO this doesn't necessarily make sense as a location (no property)
-                accept('error', 'incompatible types used.', { node: e });
+                accept('error', 'incompatible types used.', { node: e, property: undefined });
+            }
+        } else if (isPostfixExpression(e)) {
+            let type = TypeProvider.typeForExpression(e)
+            if (type === undefined) {
+                // TODO this doesn't necessarily make sense as a location (no property)
+                accept('error', 'incompatible types used.', { node: e, property:'operator'});
+            }
+        } else if (isPrefixExpression(e)) {
+            let type = TypeProvider.typeForExpression(e)
+            if (type === undefined) {
+                // TODO this doesn't necessarily make sense as a location (no property)
+                accept('error', 'incompatible types used. ', { node: e, property: 'operator' });
             }
         } else if(isCastExpression(e)) {
             let type = TypeProvider.typeForExpression(e)
@@ -45,7 +65,7 @@ export class CoreDslValidator {
                         let l = TypeProvider.typeForExpression(infix.left)
                         let r = TypeProvider.typeForExpression(infix.right)
                         if (!TypeProvider.isComparable(l,r)) {
-                            accept('error', 'incompatible types used', { node: e, property: "operator" });
+                            accept('error', 'incompatible types used. ' + l + ' vs ' + r, { node: e, property: "operator" });
                         }
                         break;
                     }
@@ -65,7 +85,7 @@ export class CoreDslValidator {
                         let l = TypeProvider.typeForExpression(infix.left)
                         let r = TypeProvider.typeForExpression(infix.right)
                         if (!TypeProvider.isComparable(l,r)) {
-                            accept('error', 'incompatible types used', { node: e, property: "operator" });
+                            accept('error', 'incompatible types used. ' + l + ' vs ' + r, { node: e, property: "operator" });
                         }
                         break;
                     }

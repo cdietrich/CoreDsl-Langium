@@ -1,6 +1,6 @@
 import { AstNode, getContainerOfType } from "langium"
 import { integer } from "vscode-languageclient"
-import { CoreDef, InstructionSet, BitField, BitValue, BoolConstant, BoolTypeSpecifier, CastExpression, CharacterConstant, ConditionalExpression, Declarator, Encoding, EntityReference, EnumTypeSpecifier, FloatConstant, FloatTypeSpecifier, FunctionCallExpression, FunctionDefinition, InfixExpression, IntegerTypeSpecifier, MemberAccessExpression, NamedEntity, ParenthesisExpression, PostfixExpression, PrefixExpression, StringConstant, StringLiteral, UserTypeSpecifier, VoidTypeSpecifier, isAssignmentExpression, isBitField, isBitValue, isBoolConstant, isBoolTypeSpecifier, isCastExpression, isCharacterConstant, isConditionalExpression, isDeclarator, isEncoding, isEntityReference, isEnumTypeSpecifier, isFloatConstant, isFloatTypeSpecifier, isFunctionCallExpression, isFunctionDefinition, isInfixExpression, isIntegerTypeSpecifier, isMemberAccessExpression, isNamedEntity, isParenthesisExpression, isPostfixExpression, isPrefixExpression, isStringConstant, isStringLiteral, isUserTypeSpecifier, isVoidTypeSpecifier, isArrayAccessExpression, ArrayAccessExpression, AssignmentExpression, isDeclaration, IntegerConstant, isIntegerConstant, Expression, isCoreDef, isInstructionSet } from "./generated/ast"
+import { CoreDef, InstructionSet, BitField, BitValue, BoolConstant, BoolTypeSpecifier, CastExpression, CharacterConstant, ConditionalExpression, Declarator, Encoding, EntityReference, EnumTypeSpecifier, FloatConstant, FloatTypeSpecifier, FunctionCallExpression, FunctionDefinition, InfixExpression, IntegerTypeSpecifier, MemberAccessExpression, NamedEntity, ParenthesisExpression, PostfixExpression, PrefixExpression, StringConstant, StringLiteral, UserTypeSpecifier, VoidTypeSpecifier, isAssignmentExpression, isBitField, isBitValue, isBoolConstant, isBoolTypeSpecifier, isCastExpression, isCharacterConstant, isConditionalExpression, isDeclarator, isEncoding, isEntityReference, isEnumTypeSpecifier, isFloatConstant, isFloatTypeSpecifier, isFunctionCallExpression, isFunctionDefinition, isInfixExpression, isIntegerTypeSpecifier, isMemberAccessExpression, isNamedEntity, isParenthesisExpression, isPostfixExpression, isPrefixExpression, isStringConstant, isStringLiteral, isUserTypeSpecifier, isVoidTypeSpecifier, isArrayAccessExpression, ArrayAccessExpression, AssignmentExpression, isDeclaration, IntegerConstant, isIntegerConstant, Expression, isCoreDef, isInstructionSet, Declaration } from "./generated/ast"
 
 
 type Type = 'VOID' | 'COMPOSITE' | 'INTEGRAL_SIGNED' | 'INTEGRAL_UNSIGNED' | 'FLOAT'
@@ -14,6 +14,11 @@ class DataType {
         this.type = type
         this.size = size
     }
+
+    public toString(): string {
+        return this.type + ' ' + this.size;
+    }
+
 }
 
 const boolType = new DataType('INTEGRAL_SIGNED', 1)
@@ -139,7 +144,7 @@ export class TypeProvider {
             // TODO
             //val sizeValue = e.size.valueFor(EvaluationContext.root(ctx))
             //if(sizeValue === null || !(sizeValue.value instanceof BigInteger)) return null
-            let sizeInt = 0 // (sizeValue.value as BigInteger).intValue
+            let sizeInt =  10 // (sizeValue.value as BigInteger).intValue
             return isUnsigned ? new DataType('INTEGRAL_UNSIGNED', sizeInt) : new DataType('INTEGRAL_SIGNED', sizeInt) 
         } else {
             if ( e.shorthand == "char") {
@@ -220,7 +225,12 @@ export class TypeProvider {
     }
 
     static typeForCastExpression(e: CastExpression, ctx: CoreDef|InstructionSet) : DataType | undefined {
-        return TypeProvider.typeFor(e.targetType!, ctx);
+        if (e.targetType !== undefined) {
+            let result = TypeProvider.typeFor(e.targetType!, ctx);
+            return result;
+        }
+        return undefined
+       
     }
 
     static typeForPrefixExpression(e: PrefixExpression, ctx: CoreDef|InstructionSet) : DataType | undefined {
@@ -261,7 +271,9 @@ export class TypeProvider {
     }
     
     static typeForEntityReference(e: EntityReference, ctx: CoreDef|InstructionSet) : DataType | undefined {
-        return TypeProvider.typeFor(e.target.ref!, ctx);
+        let rx = e.target.ref!
+        let res =  TypeProvider.typeFor(rx, ctx);
+        return res
     }
     
     static typeForNamedEntity(e: NamedEntity, ctx: CoreDef|InstructionSet) : DataType | undefined {
@@ -275,7 +287,7 @@ export class TypeProvider {
     static typeForDeclarator(e: Declarator, ctx: CoreDef|InstructionSet) : DataType | undefined {
         
         if (isDeclaration(e.$container)) {
-            return TypeProvider.typeFor(e.$container, ctx);
+            return TypeProvider.typeFor((e.$container as Declaration).type, ctx);
         }
         return undefined;
     }
@@ -362,15 +374,15 @@ export class BigIntegerWithRadix {
 		this.type = type;
 	}
 
-    static fromString(string: string) : BigIntegerWithRadix | undefined {
-        if (string.length != 0) {
-            if (string.includes("'")) {
+    static fromString(stringValue: string) : BigIntegerWithRadix | undefined {
+        if (stringValue.length != 0) {
+            if (stringValue.includes("'")) {
                 // Verilog-style literal <size>'<radix><value>
-                let lowercase = string.toLowerCase()
+                let lowercase = stringValue.toLowerCase()
                 if (lowercase.includes("u") || lowercase.includes("l")) {
                     // TODO throw new ValueConverterException("Verilog literals cannot have 'u' and 'l' suffixes", node, null);
                 }
-                let token = string.split("'")
+                let token = stringValue.split("'")
                 let lit = token[1].substring(1)
                 let size = +token[0]
                 switch(token[1].charAt(0)) {
@@ -382,10 +394,10 @@ export class BigIntegerWithRadix {
             } else {
                 // C-style literal
                 let type : BigIntegerWithRadix_TYPE = 'SIGNED'
-                if (string.includes("u") || string.includes("U")) {
+                if (stringValue.includes("u") || stringValue.includes("U")) {
                     type = 'UNSIGNED'
                 }
-                let s = string.toLowerCase().replaceAll(/[uU]/g, "")
+                let s = stringValue.toLowerCase().replace(/[uU]/g, "")
                 var size = 32
                 if (s.endsWith("ll")) {
                     size = 128
@@ -399,9 +411,9 @@ export class BigIntegerWithRadix {
                     size = s.length-1*3
                 }
                 if(s.startsWith("0x")){
-					return new BigIntegerWithRadix(string.substring(2), 16, size, type);
+					return new BigIntegerWithRadix(stringValue.substring(2), 16, size, type);
 				} else if(s.startsWith("0b")){
-					return new BigIntegerWithRadix(string.substring(2), 2, size, type);
+					return new BigIntegerWithRadix(stringValue.substring(2), 2, size, type);
 				} else if(s.length>1 && s.startsWith("0")){
 					return new BigIntegerWithRadix(s, 8, size, type);
 				} else {
@@ -426,11 +438,11 @@ export class BigDecimalWithSize {
         this.size = s
     }
 
-    static fromString(string: string) : BigDecimalWithSize | undefined {
-        if (string.length == 0) {
+    static fromString(stringValue: string) : BigDecimalWithSize | undefined {
+        if (stringValue.length == 0) {
             // TODO new ValueConverterException("Couldn't convert empty string to a float value.", node, null);
         } else {
-            var s = string.toLowerCase().replaceAll(/[_]/g, "")
+            var s = stringValue.toLowerCase().replace(/[_]/g, "")
             var size = 64
             if (s.endsWith("l")) {
                 size = 128
