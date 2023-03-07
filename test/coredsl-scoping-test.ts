@@ -307,5 +307,36 @@ describe('Test Scoping', () => {
         assertNoErrors(doc);
     });
 
+    test('switches2222', async () => {
+        let doc = await parse(`InstructionSet ZeroOverheadLoop {
+            architectural_state { 
+                unsigned int RFS = 32;
+                register unsigned<XLEN> X[RFS] [[is_main_reg]];
+                unsigned int XLEN, PC; unsigned<XLEN> count, start_PC, end_PC; 
+            }
+            instructions {
+              setup_ZOL {
+                encoding: offset[6:0] :: rs2[4:0] :: rs1[4:0] :: 3'b010 :: rd[4:0] :: 7'b0010111;
+                behavior: {
+                  // set configuration registers
+                  count    = X[rs1];
+                  start_PC = (unsigned<XLEN>) PC + 4;
+                  end_PC   = (unsigned<XLEN>) 
+                    (start_PC + (signed) offset); 
+          
+                  spawn { // this region will execute independently of setup_ZOL
+                    for (; count > 0; --count) {
+                      while (PC != end_PC) /* do nothing */ ;
+                      PC = start_PC; // jump to loop start
+                    }
+                  }
+                  // execution of setup_ZOL ends
+                }
+              }
+            }
+          }`);
+        assertNoErrors(doc);
+    });
+
 });
 
