@@ -145,7 +145,8 @@ export class TypeProvider {
             //val sizeValue = e.size.valueFor(EvaluationContext.root(ctx))
             //if(sizeValue === null || !(sizeValue.value instanceof BigInteger)) return null
             let sizeInt =  10 // (sizeValue.value as BigInteger).intValue
-            return isUnsigned ? new DataType('INTEGRAL_UNSIGNED', sizeInt) : new DataType('INTEGRAL_SIGNED', sizeInt) 
+            let result = isUnsigned ? new DataType('INTEGRAL_UNSIGNED', sizeInt) : new DataType('INTEGRAL_SIGNED', sizeInt) 
+            return result
         } else {
             if ( e.shorthand == "char") {
                 return isUnsigned ? new DataType('INTEGRAL_UNSIGNED', 8) : new DataType('INTEGRAL_SIGNED', 8) 
@@ -225,9 +226,22 @@ export class TypeProvider {
     }
 
     static typeForCastExpression(e: CastExpression, ctx: CoreDef|InstructionSet) : DataType | undefined {
+        let xx = e.$cstNode?.text
+        console.log(xx)
         if (e.targetType !== undefined) {
-            let result = TypeProvider.typeFor(e.targetType!, ctx);
+            let tt = e.targetType!
+            // check if possible
+            let result = TypeProvider.typeFor(tt, ctx);
             return result;
+        } else if (e.signedness !== undefined) {
+            let sn = e.signedness!
+            let o = e.operand
+            let ot = TypeProvider.typeFor(o, ctx)
+            if (ot !== undefined) {
+                return new DataType(sn == 'unsigned' ? 'INTEGRAL_UNSIGNED' : 'INTEGRAL_SIGNED', ot.size)
+            }
+            
+            // check if possible
         }
         return undefined
        
@@ -328,7 +342,7 @@ export class TypeProvider {
     static typeForIntegerConstant(e: IntegerConstant, ctx: CoreDef|InstructionSet) : DataType | undefined {
         let value = BigIntegerWithRadix.fromString(e.value)
         if (value !== undefined) {
-            return new DataType(value.type == 'UNSIGNED' ? 'INTEGRAL_UNSIGNED' : 'INTEGRAL_SIGNED', value.size)
+            return new DataType(value.value >= 0 ? 'INTEGRAL_UNSIGNED' : 'INTEGRAL_SIGNED', value.size)
         }
         return undefined
     }
