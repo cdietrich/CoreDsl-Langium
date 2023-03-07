@@ -69,7 +69,6 @@ export class CoreDslValidator {
     
 
     checkAttributes(attributes: Attribute[], expectedUsage: AttributeUsage, accept: ValidationAcceptor): void {
-		console.log(expectedUsage)
         for(var attribute of attributes) {
 			let info = KnownAttributes.get(attribute.type);
 			
