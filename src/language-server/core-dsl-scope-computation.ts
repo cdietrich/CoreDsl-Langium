@@ -46,11 +46,11 @@ export class CoreDslScopeProvider extends DefaultScopeProvider {
 
     private variables(isa: CoreDef|InstructionSet):NamedEntity[] {
         let fx : NamedEntity[] = isa.functions
-        let dx: NamedEntity[] = this.getStateDeclarators(isa)
+        let dx: NamedEntity[] = CoreDslScopeProvider.getStateDeclarators(isa)
         return dx.concat(fx)
     }
 
-    private getStateDeclarators(isa: CoreDef|InstructionSet):Declarator[] {
+    public static getStateDeclarators(isa: CoreDef|InstructionSet):Declarator[] {
         return isa.declarations.flatMap((it) => it.declaration.declarators)
     }
 

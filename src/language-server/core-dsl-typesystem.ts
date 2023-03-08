@@ -6,7 +6,7 @@ import { CoreDef, InstructionSet, BitField, BitValue, BoolConstant, BoolTypeSpec
 type Type = 'VOID' | 'COMPOSITE' | 'INTEGRAL_SIGNED' | 'INTEGRAL_UNSIGNED' | 'FLOAT'
 
 
-class DataType {
+export class DataType {
     type: Type
     size: integer
 
@@ -21,11 +21,11 @@ class DataType {
 
 }
 
-const boolType = new DataType('INTEGRAL_SIGNED', 1)
+export const boolType = new DataType('INTEGRAL_SIGNED', 1)
 
 export class TypeProvider {
 
-    static isIntegral(dt: DataType) : boolean {
+    public static isIntegral(dt: DataType) : boolean {
 		return dt.size > 0 && (dt.type == 'INTEGRAL_SIGNED' || dt.type=='INTEGRAL_UNSIGNED')
     }
 
@@ -50,7 +50,10 @@ export class TypeProvider {
         return TypeProvider.typeFor(e, p!)
     }
 
-    static typeFor(e: AstNode, ctx: CoreDef|InstructionSet) : DataType | undefined {
+    static typeFor(e: AstNode, ctx: CoreDef|InstructionSet|undefined) : DataType | undefined {
+        if (ctx === undefined) {
+            return undefined;
+        }
         if (isBoolConstant(e)) {
             return TypeProvider.typeForBoolConstant(e as BoolConstant, ctx);
           } else if (isCharacterConstant(e)) {
